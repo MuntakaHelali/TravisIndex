@@ -16,7 +16,7 @@ before_deploy:
   - ssh-add /tmp/deploy_rsa
 addons:
   # add our deploy server to known hosts
-  # you can set environmental variable in Travis GUI
+  # you can set environmental variable in Travis GUIs
   ssh_known_host: moon.scs.ryerson.ca
   
 deploy:
