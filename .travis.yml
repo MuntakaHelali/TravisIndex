@@ -8,6 +8,22 @@ script:
 - python -m unittest discover -v ./ci_play/
 - coverage run ./ci_play/test.py
 after_success: bash <(curl -s https://codecov.io/bash)
-before_install:
+before_deploy:
 - openssl aes-256-cbc -K $encrypted_4a04085525cb_key -iv $encrypted_4a04085525cb_iv
   -in deploy_rsa.enc -out deploy_rsa -d
+  - eval "$(ssh-agent -s)"
+  - chmod 600 /tmp/deploy_rsa
+  - ssh-add /tmp/deploy_rsa
+addons:
+  # add our deploy server to known hosts
+  # you can set environmental variable in Travis GUI
+  ssh_known_host: moon.scs.ryerson.ca
+  
+deploy:
+     provider: script
+     skip_cleanup: true
+     script: rsync -r --delete-after --quiet
+        ${TRAVIS_BUILD_DIR}/public_html/index.html
+        ${DEPLOY_USER}@${DEPLOY_SERVER}:/home/avm/courses/cps847/mhelali
+     on:
+        branch: master
